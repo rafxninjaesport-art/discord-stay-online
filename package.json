@@ -1,0 +1,17 @@
+{
+  "name": "stay-online-angga",
+  "version": "1.0.0",
+  "description": "Stay 24/7 Voice Discord - Buatan Angga",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "@discordjs/voice": "^0.16.1",
+    "axios": "^1.6.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
