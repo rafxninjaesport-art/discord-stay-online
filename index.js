@@ -1,8 +1,8 @@
-// =================== CONFIGURASI BOT ===================
-const token = "MASUKKAN_TOKEN_DISCORD_LU_DISINI"; // ⚠️ GANTI BAGIAN INI!
-const channelId = "MASUKKAN_ID_VOICE_CHANNEL_DISINI"; // ⚠️ GANTI BAGIAN INI!
-const statusText = "Sedang Online 24/7 | By Angga"; // Bisa lu ganti nama statusnya
-// ========================================================
+// =================== CONFIGURASI DARI RAILWAY ===================
+const token = process.env.TOKEN;       // ⬅️ Ambil otomatis dari Variables Railway
+const channelId = process.env.CHANNEL_ID; // ⬅️ Ambil otomatis dari Variables Railway
+const statusText = "Sedang Online 24/7 | By Angga";
+// =================================================================
 
 const { Client, GatewayIntentBits, ChannelType, ActivityType } = require('discord.js');
 const client = new Client({
