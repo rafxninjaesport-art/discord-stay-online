@@ -1,10 +1,14 @@
-// =================== CONFIGURASI DARI RAILWAY ===================
-const token = process.env.TOKEN;       // ⬅️ Ambil otomatis dari Variables Railway
-const channelId = process.env.CHANNEL_ID; // ⬅️ Ambil otomatis dari Variables Railway
+// =================== AMBIL DATA DARI RAILWAY VARIABLES ===================
+const token = process.env.TOKEN;
+const channelId = process.env.CHANNEL_ID;
 const statusText = "Sedang Online 24/7 | By Angga";
-// =================================================================
+// =========================================================================
 
 const { Client, GatewayIntentBits, ChannelType, ActivityType } = require('discord.js');
+const { joinVoiceChannel } = require('@discordjs/voice');
+const { createAudioPlayer, NoSubscriberBehavior } = require('@discordjs/voice');
+const axios = require('axios');
+
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -13,14 +17,16 @@ const client = new Client({
     ]
 });
 
-const { joinVoiceChannel } = require('@discordjs/voice');
-const { createAudioPlayer, NoSubscriberBehavior } = require('@discordjs/voice');
-const axios = require('axios');
-
 // Saat Bot Siap
 client.on('ready', async () => {
     console.log(`✅ LOGIN BERHASIL SEBAGAI: ${client.user.tag}`);
     console.log(`🔗 Mencoba masuk ke Voice Channel: ${channelId}`);
+
+    // Cek apakah data Token & Channel udah masuk
+    if (!token || !channelId) {
+        console.log('❌ ERROR: TOKEN atau CHANNEL_ID belum dimasukin di Variables Railway!');
+        return process.exit(1);
+    }
 
     // Set Status Aktivitas
     client.user.setActivity(statusText, { type: ActivityType.Competing });
@@ -29,13 +35,16 @@ client.on('ready', async () => {
     const masukVoice = () => {
         try {
             const saluran = client.channels.cache.get(channelId);
-            if (!saluran || saluran.type !== ChannelType.GuildVoice) return console.log('❌ Channel Tidak Ditemukan / Bukan Voice!');
+            if (!saluran || saluran.type !== ChannelType.GuildVoice) {
+                console.log('❌ Channel Tidak Ditemukan / Bukan Voice!');
+                return setTimeout(masukVoice, 5000);
+            }
 
             const koneksi = joinVoiceChannel({
                 channelId: saluran.id,
                 guildId: saluran.guild.id,
                 adapterCreator: saluran.guild.voiceAdapterCreator,
-                selfDeaf: true, // ✨ Ini biar lu otomatis mati suara (biar aman)
+                selfDeaf: true, // ✨ Otomatis mati mikrofon (biar aman)
                 selfMute: false
             });
 
@@ -59,8 +68,8 @@ client.on('ready', async () => {
 
     // Sistem Anti Mati (Ping Diri Sendiri biar Railway gak tidur)
     setInterval(() => {
-        axios.get('https://' + process.env.RAILWAY_STATIC_URL || 'localhost')
-        .catch(() => => {});
+        axios.get(`https://${process.env.RAILWAY_STATIC_URL || 'localhost'}`)
+        .catch(() => {}); // ✅ BAGIAN INI UDAH DIPERBAIKI, GAK ADA ERROR LAGI!
     }, 180000); // Setiap 3 menit di ping biar nyala terus
 });
 
@@ -68,5 +77,5 @@ client.on('ready', async () => {
 client.on('error', (e) => console.log('⚠️ ERROR KECIL:', e));
 process.on('unhandledRejection', (alasan) => console.log('⚠️ DITOLAK:', alasan));
 
-// Login Pakai Token
+// Login Pakai Token dari Variabel
 client.login(token);
